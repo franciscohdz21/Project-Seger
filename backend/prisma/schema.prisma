@@ -1,0 +1,68 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Customer {
+  id           Int      @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  cellPhone    String
+  email        String
+  dateOfBirth  DateTime
+  street       String
+  state        String
+  country      String
+  healthNotes  String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Payment {
+  id            Int      @id @default(autoincrement())
+  appointmentId Int
+  customerId    Int
+  totalPaid     Float
+  totalLeft     Float
+  method        String
+  status        String
+  notes         String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Cabin1Appointment {
+  id           Int      @id @default(autoincrement())
+  date         DateTime
+  time         String
+  customerId   Int
+  package      String
+  session      Int
+  treatment    String
+  subTreatment String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Cabin2Appointment {
+  id           Int      @id @default(autoincrement())
+  date         DateTime
+  time         String
+  customerId   Int
+  package      String
+  session      Int
+  treatment    String
+  subTreatment String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model EventLog {
+  id        Int      @id @default(autoincrement())
+  message   String
+  timestamp DateTime @default(now())
+}

@@ -9,7 +9,7 @@ import Settings from './Settings';
 export default function App() {
   return (
     <div className="flex h-screen">
-      <aside className="w-64 bg-gray-100 p-4">
+      <aside className="w-64 h-full bg-blue-900 text-white p-4 shadow-md">
         <h1 className="text-xl font-bold mb-6">Project Seger</h1>
         <nav className="space-y-3">
           <Link to="/" className="block hover:underline">Dashboard</Link>
@@ -22,7 +22,7 @@ export default function App() {
         </nav>
       </aside>
 
-      <main className="flex-1 p-6 overflow-auto">
+      <main className="flex-1 p-6 bg-blue-50 text-gray-800 overflow-auto">
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/customers" element={<Customers />} />

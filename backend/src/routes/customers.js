@@ -34,10 +34,19 @@ module.exports = async function (app) {
   app.put('/customers/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     try {
-      return await prisma.customer.update({
+      const { dateOfBirth, createdAt, updatedAt, id: _, ...rest } = req.body;
+
+      const data = {
+        ...rest,
+        dateOfBirth: new Date(dateOfBirth)
+      };
+
+      const updated = await prisma.customer.update({
         where: { id },
-        data: req.body
+        data
       });
+
+      return updated;
     } catch (err) {
       res.code(400).send({ error: 'Update failed', details: err.message });
     }

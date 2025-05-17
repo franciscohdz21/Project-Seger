@@ -8,7 +8,8 @@ const app = Fastify({ logger: true });
 
 // Register modern CORS
 app.register(cors, {
-  origin: true
+  origin: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE']
 });
 
 app.addHook('onRequest', logger);

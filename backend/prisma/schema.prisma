@@ -11,13 +11,14 @@ model Customer {
   id           Int      @id @default(autoincrement())
   firstName    String
   lastName     String
-  cellPhone    String
-  email        String
+  cellPhone    String   @unique
+  email        String   @unique
   dateOfBirth  DateTime
   street       String
+  city         String
   state        String
   country      String
-  healthNotes  String
+  healthNotes  String  @db.VarChar(20)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }

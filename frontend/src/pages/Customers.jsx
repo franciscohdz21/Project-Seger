@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Button from '../components/Button';   
 
 const initialForm = {
   firstName: '',
@@ -102,9 +103,9 @@ export default function Customers() {
             className="w-full border p-2 rounded"
           />
         ))}
-        <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+        <Button>
           {editing ? 'Update' : 'Add'} Customer
-        </button>
+        </Button>
       </form>
 
       <div className="w-2/3">

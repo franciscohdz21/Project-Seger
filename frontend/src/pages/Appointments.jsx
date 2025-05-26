@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import DatePicker from 'react-datepicker';
+import Button from '../components/Button';
 
 /* ──────────────  30-min slots, 08:00 → 21:00  ────────────── */
 const timeSlots = Array.from({ length: 26 }, (_, i) => {
@@ -15,6 +16,7 @@ export default function Appointments() {
   const [date,        setDate]   = useState(dayjs().format('YYYY-MM-DD'));
   const [appointments,setAppt]   = useState([]);
   const [activeCabin, setCabin]  = useState('1');           // keep if you need Cabin 1/2
+  const [selectedSlot, setSelectedSlot] = useState(null);
 
   /* ───── fetch appointments (by cabin) ───── */
   const fetchAppointments = async () => {
@@ -23,7 +25,17 @@ export default function Appointments() {
       setAppt(res.data);
     } catch (err) { console.error(err); }
   };
-  useEffect(() => { fetchAppointments(); }, [date, activeCabin]);
+
+  const getAppointmentAtTime = (slot) => {
+    return appointments.find(
+      (a) => a.date.split('T')[0] === date && a.time === slot
+    );
+  };
+
+  useEffect(() => { 
+    fetchAppointments();
+    setSelectedSlot(null);
+  }, [date, activeCabin]);
 
   /* find any appointment at a specific time slot for that date */
   const findBySlot = (slot) =>
@@ -45,7 +57,10 @@ export default function Appointments() {
             {['1','2'].map(c => (
               <button
                 key={c}
-                onClick={() => setCabin(c)}
+                onClick={() => {
+                  setCabin(c);   // switch cabin
+                  setSelectedSlot(null);   // clear highlighted row
+                }}
                 className={`px-4 py-1 rounded ${
                   activeCabin === c ? 'bg-blue-600 text-white'
                                     : 'bg-gray-300 text-gray-800'
@@ -72,17 +87,45 @@ export default function Appointments() {
           }
         />
 
-          <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-            Edit Appointment
-          </button>
-          <button className="bg-red-600  text-white px-4 py-2 rounded hover:bg-red-700">
-            Delete Appointment
-          </button>
+        {/* EDIT button */}
+        <button
+          disabled={!selectedSlot}                              // ← disable when nothing selected
+          className={`px-4 py-2 rounded transition ${
+            selectedSlot
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'bg-blue-300 text-white cursor-not-allowed'
+          }`}
+          onClick={() => {
+            if (!selectedSlot) return;
+            const appt = getAppointmentAtTime(selectedSlot);
+            openEditModal(appt);                                // your existing modal
+          }}
+        >
+          Edit Appointment
+        </button>
+
+        {/* DELETE button */}
+        <button
+          disabled={!selectedSlot}
+          className={`px-4 py-2 rounded transition ${
+            selectedSlot
+              ? 'bg-red-600 text-white hover:bg-red-700'
+              : 'bg-red-300 text-white cursor-not-allowed'
+          }`}
+          onClick={() => {
+            if (!selectedSlot) return;
+            const appt = getAppointmentAtTime(selectedSlot);
+            openDeleteConfirm(appt);                            // your delete handler
+          }}
+        >
+          Delete Appointment
+        </button>
+
         </div>
       </div>
 
       {/* Spreadsheet-style table */}
-      <div className="overflow-x-auto">
+      <div className="card shadow-card bg-base-100 p-4 overflow-x-auto">
         <table className="w-full table-fixed border-collapse">
           <thead>
             <tr className="bg-blue-200 text-left">
@@ -101,23 +144,31 @@ export default function Appointments() {
           </thead>
 
           <tbody>
-            {timeSlots.map(slot => {
-              const a = findBySlot(slot);
+            {timeSlots.map(time => {
+              const appt       = getAppointmentAtTime(time);   // ← you already have this helper
+              const isSelected = selectedSlot === time;
+
               return (
-                <tr key={slot} className="hover:bg-gray-100">
+                <tr
+                  key={time}
+                  onClick={() => setSelectedSlot(time)}         // ① click = select
+                  className={`cursor-pointer hover:bg-gray-100 ${
+                    isSelected ? 'bg-yellow-200' : ''
+                  }`}
+                >
                   <td className="border px-2 py-1">
-                    {dayjs(`${date}T${slot}`).format('h:mm A')}
+                    {dayjs(`${date}T${time}`).format('h:mm A')}
                   </td>
-                  <td className="border px-2 py-1">{a?.firstName     || ''}</td>
-                  <td className="border px-2 py-1">{a?.lastName      || ''}</td>
-                  <td className="border px-2 py-1">{a?.cellPhone     || ''}</td>
-                  <td className="border px-2 py-1">{a?.status        || ''}</td>
-                  <td className="border px-2 py-1">{a?.total         || ''}</td>
-                  <td className="border px-2 py-1">{a?.package       || ''}</td>
-                  <td className="border px-2 py-1">{a?.sessionNumber || ''}</td>
-                  <td className="border px-2 py-1">{a?.treatment     || ''}</td>
-                  <td className="border px-2 py-1">{a?.subTreatment  || ''}</td>
-                  <td className="border px-2 py-1">{a?.notes         || ''}</td>
+                  <td className="border px-2 py-1">{appt?.firstName     || ''}</td>
+                  <td className="border px-2 py-1">{appt?.lastName      || ''}</td>
+                  <td className="border px-2 py-1">{appt?.cellPhone     || ''}</td>
+                  <td className="border px-2 py-1">{appt?.status        || ''}</td>
+                  <td className="border px-2 py-1">{appt?.total         || ''}</td>
+                  <td className="border px-2 py-1">{appt?.package       || ''}</td>
+                  <td className="border px-2 py-1">{appt?.sessionNumber || ''}</td>
+                  <td className="border px-2 py-1">{appt?.treatment     || ''}</td>
+                  <td className="border px-2 py-1">{appt?.subTreatment  || ''}</td>
+                  <td className="border px-2 py-1">{appt?.notes         || ''}</td>
                 </tr>
               );
             })}

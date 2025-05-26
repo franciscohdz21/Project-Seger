@@ -2,16 +2,30 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 export default function SideNav() {
-  const base   = 'block px-4 py-2 hover:bg-gray-200';
-  const active = 'bg-blue-600 text-white';
+  const link   = 'block px-4 py-2 rounded-r-lg transition-colors';
+  const active = 'bg-brand-500 text-white shadow-card';
 
   return (
-    <nav className="w-48 border-r h-screen space-y-1">
-      <NavLink to="/dashboard"    className={({isActive}) => isActive ? `${base} ${active}` : base}>Dashboard</NavLink>
-      <NavLink to="/customers"    className={({isActive}) => isActive ? `${base} ${active}` : base}>Customers</NavLink>
-      <NavLink to="/appointments" className={({isActive}) => isActive ? `${base} ${active}` : base}>Appointments</NavLink>
-      <NavLink to="/payments"     className={({isActive}) => isActive ? `${base} ${active}` : base}>Payments</NavLink>
+    <nav className="w-56 bg-base-100 shadow-card flex flex-col gap-1 p-3">
+      <NavLink to="/dashboard"
+               className={({isActive}) => isActive ? `${link} ${active}` : `${link} hover:bg-brand-50`}>
+        Dashboard
+      </NavLink>
+
+      <NavLink to="/customers"
+               className={({isActive}) => isActive ? `${link} ${active}` : `${link} hover:bg-brand-50`}>
+        Customers
+      </NavLink>
+
+      <NavLink to="/appointments"
+               className={({isActive}) => isActive ? `${link} ${active}` : `${link} hover:bg-brand-50`}>
+        Appointments
+      </NavLink>
+
+      <NavLink to="/payments"
+               className={({isActive}) => isActive ? `${link} ${active}` : `${link} hover:bg-brand-50`}>
+        Payments
+      </NavLink>
     </nav>
   );
 }
-
